@@ -122,7 +122,7 @@ class RegisterFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
                             val intent = Intent(activity, MainActivity2::class.java)
-                            intent.putExtra("key", username)
+                            intent.putExtra("key", "$username")
                             Log.d("checkingKey", "onViewCreated: $username")
                             startActivity(intent)
                         }
@@ -153,8 +153,16 @@ class RegisterFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
             coroutineScope.launch {
-                editText1.setText(viewModel.username.value)
-                editText2.setText(viewModel.password.value)
+                viewModel.username.collect {
+                    value ->
+                    editText1.setText(value)
+                }
+            }
+            coroutineScope.launch {
+                viewModel.password.collect {
+                        value ->
+                    editText2.setText(value)
+                }
             }
         }
     }

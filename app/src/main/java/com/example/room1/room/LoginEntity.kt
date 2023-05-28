@@ -18,6 +18,6 @@ data class Data(
     val name: String,
     val url: String,
     val password: String,
-    val key: String?,
+    val name2: String?,
 )
 

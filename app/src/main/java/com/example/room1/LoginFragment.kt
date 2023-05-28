@@ -122,8 +122,16 @@ class LoginFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
             coroutineScope.launch {
-                editText1.setText(viewModel.username.value)
-                editText2.setText(viewModel.password.value)
+                viewModel.username.collect {
+                        value ->
+                    editText1.setText(value)
+                }
+            }
+            coroutineScope.launch {
+                viewModel.password.collect {
+                        value ->
+                    editText2.setText(value)
+                }
             }
         }
     }

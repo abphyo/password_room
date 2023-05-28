@@ -18,6 +18,6 @@ interface Dao {
     @Insert
     suspend fun insertData(data: Data)
 
-    @Query("SELECT * FROM data WHERE `key` = :key ")
+    @Query("SELECT * FROM data WHERE name2 = :key ")
     suspend fun getListByKey(key: String?): List<Data?>
 }

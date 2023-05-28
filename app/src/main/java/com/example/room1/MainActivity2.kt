@@ -41,18 +41,18 @@ class MainActivity2 : AppCompatActivity() {
         Log.d("checkingKey2", "onCreate: $key")
         key?.let {
             viewModel.memorizeKey(it)
-            viewModel.getDataList(it)
         }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         coroutineScope.launch {
-            viewModel.dataList.collect {
+            viewModel.usernameAsKey.collect {
                 value ->
-                dataList = value
+                dataList = dao.getListByKey(value)
             }
         }
         Log.d("checkingDataList", "onCreate: $dataList")
         adapter = RecyclerAdapter(dataList)
+        recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
         add.setOnClickListener {
             val contentView = LayoutInflater.from(this).inflate(R.layout.add_dialog, null, false)
@@ -70,10 +70,13 @@ class MainActivity2 : AppCompatActivity() {
                     coroutineScope.launch {
                         viewModel.usernameAsKey.collect {
                             value ->
-                            viewModel.insertData(Data(name = "$name", url = "$url", password = "$password", key = value))
+                            viewModel.insertData(Data(name = "$name", url = "$url", password = "$password", name2 = value))
+                            dataList = dao.getListByKey(value)
+                            adapter = RecyclerAdapter(dataList)
+                            adapter.notifyItemInserted(dataList.size - 1)
+                            recyclerView.adapter = adapter
                         }
                     }
-                    adapter.notifyItemInserted(dataList.size - 1)
                 }
                 .show()
         }

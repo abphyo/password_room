@@ -1,5 +1,6 @@
 package com.example.room1
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.room1.room.Dao
@@ -49,6 +50,7 @@ class ViewModelActivity1(private val dao: Dao): ViewModel() {
     }
 
     fun memorize(str1: String, str2: String) {
+        Log.d("checkingVariables", "memorize: $str1 and $str2")
         viewModelScope.launch {
             _username.update { str1 }
             _password.update { str2 }
