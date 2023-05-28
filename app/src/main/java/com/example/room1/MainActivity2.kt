@@ -15,6 +15,9 @@ import com.example.room1.room.Data
 import com.example.room1.room.RoomApplication
 import com.example.room1.room.ViewModelActivity2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity2 : AppCompatActivity() {
     private lateinit var add: FloatingActionButton
@@ -24,7 +27,9 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var appDatabase: AppDatabase
     private lateinit var dao: Dao
     private lateinit var viewModel: ViewModelActivity2
-    private var dataList = mutableListOf<Data?>()
+    private var dataList = emptyList<Data?>()
+    private lateinit var adapter: RecyclerAdapter
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -40,8 +45,15 @@ class MainActivity2 : AppCompatActivity() {
         }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        coroutineScope.launch {
+            viewModel.dataList.collect {
+                value ->
+                dataList = value
+            }
+        }
         Log.d("checkingDataList", "onCreate: $dataList")
-        recyclerView.adapter = RecyclerAdapter(dataList)
+        adapter = RecyclerAdapter(dataList)
+        recyclerView.adapter = adapter
         add.setOnClickListener {
             val contentView = LayoutInflater.from(this).inflate(R.layout.add_dialog, null, false)
             AlertDialog.Builder(this)
@@ -55,11 +67,15 @@ class MainActivity2 : AppCompatActivity() {
                     val name = editText1.editableText
                     val url = editText2.editableText
                     val password = editText3.editableText
-                    dataList.add(Data(name = "$name", url = "$url", password = "$password", key = key))
+                    coroutineScope.launch {
+                        viewModel.usernameAsKey.collect {
+                            value ->
+                            viewModel.insertData(Data(name = "$name", url = "$url", password = "$password", key = value))
+                        }
+                    }
+                    adapter.notifyItemInserted(dataList.size - 1)
                 }
                 .show()
         }
     }
-
-    
 }

@@ -153,8 +153,8 @@ class RegisterFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
             coroutineScope.launch {
-                editText1.setText("${viewModel.username}")
-                editText2.setText("${viewModel.password}")
+                editText1.setText(viewModel.username.value)
+                editText2.setText(viewModel.password.value)
             }
         }
     }

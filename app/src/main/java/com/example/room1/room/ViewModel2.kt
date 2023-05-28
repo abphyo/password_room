@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class ViewModelActivity2(private val dao: Dao): ViewModel() {
 
-    private val _dataList = MutableStateFlow<List<Data?>>(emptyList())
+    private val _dataList = MutableStateFlow(listOf<Data?>())
     val dataList: StateFlow<List<Data?>> get() = _dataList
 
     private val _usernameAsKey: MutableStateFlow<String?> = MutableStateFlow("")
